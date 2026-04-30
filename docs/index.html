@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="src/output.css" />
+    <link rel="icon" type="image/png" href="./assets/sand-clock.png" />
+    <style>
+      body {
+        background: #0a0a0a;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+      }
+
+      /* ── Card ── */
+      .card {
+        background: linear-gradient(160deg, #161616, #0e0e0e);
+        border: 1px solid #242424;
+        border-radius: 2.5rem;
+        padding: 3rem 3rem 2.5rem;
+        width: 440px;
+        box-shadow:
+          0 0 0 1px #ffffff06,
+          0 40px 100px #00000090,
+          inset 0 1px 0 #ffffff0a;
+        text-align: center;
+      }
+
+      /* ── Badge ── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #181818;
+        border: 1px solid #2e2e2e;
+        color: #666;
+        font-size: 0.68rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        padding: 0.35rem 1rem;
+        border-radius: 999px;
+        margin-bottom: 1.75rem;
+      }
+
+      .badge-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #e85d04;
+        box-shadow: 0 0 6px #e85d04;
+      }
+
+      h1 {
+        color: #f0f0f0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.3rem;
+      }
+
+      .subtitle {
+        color: #444;
+        font-size: 0.82rem;
+        margin-bottom: 2.25rem;
+      }
+
+      /* ── Circular Timer ── */
+      .timer-ring-wrap {
+        position: relative;
+        width: 240px;
+        height: 240px;
+        margin: 0 auto 2.25rem;
+      }
+
+      .timer-svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+
+      /* track */
+      .ring-track {
+        fill: none;
+        stroke: #1c1c1c;
+        stroke-width: 6;
+      }
+
+      /* progress arc */
+      .ring-progress {
+        fill: none;
+        stroke: url(#ringGrad);
+        stroke-width: 6;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.1s linear;
+      }
+
+      /* inner face */
+      .timer-face {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: radial-gradient(circle at 40% 35%, #1e1e1e, #0d0d0d);
+        box-shadow:
+          inset 0 2px 8px #00000060,
+          inset 0 -1px 0 #ffffff06,
+          0 0 0 1px #1f1f1f;
+      }
+
+      .timer-digits {
+        display: flex;
+        align-items: center;
+        gap: 0.15rem;
+        font-size: 3.6rem;
+        font-weight: 800;
+        letter-spacing: -0.05em;
+        color: #f0f0f0;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+      }
+
+      .timer-sep {
+        color: #333;
+        font-weight: 300;
+        padding-bottom: 0.2rem;
+      }
+
+      .timer-ms {
+        font-size: 1.1rem;
+        color: #333;
+        font-weight: 600;
+        margin-top: 0.4rem;
+        letter-spacing: 0.08em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .timer-label {
+        display: flex;
+        gap: 3.8rem;
+        margin-top: 0.5rem;
+        color: #2e2e2e;
+        font-size: 0.6rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      /* running state — glow on ring */
+      .timer-ring-wrap.running .timer-face {
+        box-shadow:
+          inset 0 2px 8px #00000060,
+          inset 0 -1px 0 #ffffff06,
+          0 0 0 1px #1f1f1f,
+          0 0 40px #e85d0420;
+      }
+
+      .timer-ring-wrap.running .timer-digits {
+        color: #fff;
+      }
+
+      .timer-ring-wrap.done .timer-digits {
+        color: #e85d04;
+      }
+
+      .timer-ring-wrap.done .timer-ms {
+        color: #e85d0480;
+      }
+
+      /* ── Input ── */
+      .input-group {
+        margin-bottom: 1.25rem;
+        text-align: left;
+      }
+
+      .input-group label {
+        display: block;
+        color: #444;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+
+      .input-group input {
+        width: 100%;
+        background: #111;
+        border: 1px solid #242424;
+        border-radius: 0.875rem;
+        color: #f0f0f0;
+        font-size: 1rem;
+        padding: 0.8rem 1rem;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        appearance: textfield;
+        -moz-appearance: textfield;
+      }
+
+      .input-group input::-webkit-outer-spin-button,
+      .input-group input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
+
+      .input-group input::placeholder {
+        color: #333;
+      }
+
+      .input-group input:focus {
+        border-color: #e85d04;
+        box-shadow: 0 0 0 3px #e85d0418;
+      }
+
+      /* ── Button ── */
+      .btn-start {
+        width: 100%;
+        padding: 0.9rem 1.5rem;
+        border-radius: 0.875rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: none;
+        background: linear-gradient(135deg, #e85d04 0%, #c44d00 100%);
+        color: #fff;
+        box-shadow:
+          0 4px 20px #e85d0438,
+          inset 0 1px 0 #ffffff22;
+        transition:
+          opacity 0.2s,
+          transform 0.15s,
+          box-shadow 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-start::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 55%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, #ffffff14, transparent);
+        transition: left 0.45s ease;
+      }
+
+      .btn-start:hover::after {
+        left: 160%;
+      }
+
+      .btn-start:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 30px #e85d0450;
+      }
+
+      .btn-start:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      .btn-start:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      /* ── Message ── */
+      .message {
+        margin-top: 1.1rem;
+        font-size: 0.82rem;
+        color: #e85d04;
+        letter-spacing: 0.06em;
+        min-height: 1.2rem;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <span class="badge">
+        <span class="badge-dot"></span>
+        Focus Mode
+      </span>
+      <h1>Pomodoro Timer</h1>
+      <p class="subtitle">Stay focused. Work in sessions.</p>
+
+      <!-- Circular timer -->
+      <div class="timer-ring-wrap" id="timer-display">
+        <!-- SVG progress ring -->
+        <svg class="timer-svg" viewBox="0 0 240 240" aria-hidden="true">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#e85d04" />
+              <stop offset="100%" stop-color="#ff8c42" />
+            </linearGradient>
+          </defs>
+          <!-- track -->
+          <circle class="ring-track" cx="120" cy="120" r="108" />
+          <!-- progress -->
+          <circle
+            class="ring-progress"
+            id="ring-progress"
+            cx="120"
+            cy="120"
+            r="108"
+          />
+        </svg>
+
+        <!-- Inner face -->
+        <div class="timer-face">
+          <div class="timer-digits">
+            <span id="minuets">00</span>
+            <span class="timer-sep">:</span>
+            <span id="seconds">00</span>
+          </div>
+          <div class="timer-ms" id="micorsecond">00</div>
+          <div class="timer-label">
+            <span>min</span>
+            <span>sec</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="totalminuet">Session Duration (minutes)</label>
+        <input
+          type="number"
+          id="totalminuet"
+          min="1"
+          max="1000"
+          placeholder="e.g. 25"
+        />
+      </div>
+
+      <button class="btn-start" id="start-section">Start Session</button>
+
+      <p class="message" id="message"></p>
+    </div>
+
+    <script src="src/main.js"></script>
+  </body>
+</html>
