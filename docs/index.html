@@ -28,6 +28,14 @@
           0 40px 100px #00000090,
           inset 0 1px 0 #ffffff0a;
         text-align: center;
+        /* blur target */
+        transition: filter 0.3s ease;
+      }
+
+      .card.blurred {
+        filter: blur(6px);
+        pointer-events: none;
+        user-select: none;
       }
 
       /* ── Badge ── */
@@ -50,8 +58,8 @@
         width: 5px;
         height: 5px;
         border-radius: 50%;
-        background: #e85d04;
-        box-shadow: 0 0 6px #e85d04;
+        background: #0ae627;
+        box-shadow: 0 0 6px #0ae627;
       }
 
       h1 {
@@ -82,14 +90,12 @@
         transform: rotate(-90deg);
       }
 
-      /* track */
       .ring-track {
         fill: none;
         stroke: #1c1c1c;
         stroke-width: 6;
       }
 
-      /* progress arc */
       .ring-progress {
         fill: none;
         stroke: url(#ringGrad);
@@ -98,7 +104,6 @@
         transition: stroke-dashoffset 0.1s linear;
       }
 
-      /* inner face */
       .timer-face {
         position: absolute;
         inset: 0;
@@ -109,9 +114,9 @@
         border-radius: 50%;
         background: radial-gradient(circle at 40% 35%, #1e1e1e, #0d0d0d);
         box-shadow:
-          inset 0 2px 8px #00000060,
+          inset 0 2px 8px #43c41460,
           inset 0 -1px 0 #ffffff06,
-          0 0 0 1px #1f1f1f;
+          0 0 0 1px #1a6d1d;
       }
 
       .timer-digits {
@@ -151,25 +156,22 @@
         text-transform: uppercase;
       }
 
-      /* running state — glow on ring */
       .timer-ring-wrap.running .timer-face {
         box-shadow:
-          inset 0 2px 8px #00000060,
-          inset 0 -1px 0 #ffffff06,
-          0 0 0 1px #1f1f1f,
-          0 0 40px #e85d0420;
+          inset 0 2px 8px #43c41460,
+          inset 0 -1px 0 #309b366e,
+          0 0 0 1px #14751d,
+          0 0 40px #08772020;
       }
 
       .timer-ring-wrap.running .timer-digits {
-        color: #fff;
+        color: #fe0000;
       }
-
       .timer-ring-wrap.done .timer-digits {
-        color: #e85d04;
+        color: #fe0000;
       }
-
       .timer-ring-wrap.done .timer-ms {
-        color: #e85d0480;
+        color: #fe0000;
       }
 
       /* ── Input ── */
@@ -213,11 +215,11 @@
       }
 
       .input-group input:focus {
-        border-color: #e85d04;
+        border-color: #0ae627;
         box-shadow: 0 0 0 3px #e85d0418;
       }
 
-      /* ── Button ── */
+      /* ── Start Button ── */
       .btn-start {
         width: 100%;
         padding: 0.9rem 1.5rem;
@@ -228,11 +230,11 @@
         text-transform: uppercase;
         cursor: pointer;
         border: none;
-        background: linear-gradient(135deg, #e85d04 0%, #c44d00 100%);
+        background: linear-gradient(135deg, #0ae627 0%, #0ae627 100%);
         color: #fff;
         box-shadow:
-          0 4px 20px #e85d0438,
-          inset 0 1px 0 #ffffff22;
+          0 4px 20px #4ad20f38,
+          inset 0 1px 0 #4ad20f38;
         transition:
           opacity 0.2s,
           transform 0.15s,
@@ -271,19 +273,142 @@
         box-shadow: none;
       }
 
-      /* ── Message ── */
+      /* ── Message (kept for JS compat, hidden visually) ── */
       .message {
-        margin-top: 1.1rem;
-        font-size: 0.82rem;
-        color: #e85d04;
+        display: none;
+      }
+
+      /* ════════════════════════════════════════
+         MODAL OVERLAY
+      ════════════════════════════════════════ */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        /* invisible by default */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+
+      .modal-overlay.visible {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* dark scrim behind modal */
+      .modal-scrim {
+        position: absolute;
+        inset: 0;
+        background: #00000088;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+      }
+
+      /* modal box */
+      .modal {
+        position: relative;
+        z-index: 1;
+        background: linear-gradient(160deg, #1c1c1c, #131313);
+        border: 1px solid #2e2e2e;
+        border-radius: 1.75rem;
+        padding: 2.5rem 2.5rem 2rem;
+        width: 340px;
+        text-align: center;
+        box-shadow:
+          0 0 0 1px #ffffff08,
+          0 32px 80px #000000a0,
+          inset 0 1px 0 #ffffff0d;
+        transform: translateY(16px) scale(0.97);
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .modal-overlay.visible .modal {
+        transform: translateY(0) scale(1);
+      }
+
+      /* checkmark icon */
+      .modal-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+      }
+
+      .modal-title {
+        color: #f0f0f0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+
+      .modal-body {
+        color: #555;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+      }
+
+      /* dismiss button */
+      .btn-dismiss {
+        width: 100%;
+        padding: 0.85rem 1.5rem;
+        border-radius: 0.875rem;
+        font-size: 0.88rem;
+        font-weight: 600;
         letter-spacing: 0.06em;
-        min-height: 1.2rem;
-        font-weight: 500;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: none;
+        background: linear-gradient(135deg, #04e832 0%, #04e832 100%);
+        color: #fff;
+        box-shadow:
+          0 4px 20px #e85d0438,
+          inset 0 1px 0 #ffffff22;
+        transition:
+          opacity 0.2s,
+          transform 0.15s,
+          box-shadow 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-dismiss::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 55%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, #ffffff14, transparent);
+        transition: left 0.45s ease;
+      }
+
+      .btn-dismiss:hover::after {
+        left: 160%;
+      }
+
+      .btn-dismiss:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 30px #e85d0450;
+      }
+
+      .btn-dismiss:active {
+        transform: translateY(0);
       }
     </style>
   </head>
   <body>
-    <div class="card">
+    <!-- ── Main card (gets blurred) ── -->
+    <div class="card" id="main-card">
       <span class="badge">
         <span class="badge-dot"></span>
         Focus Mode
@@ -291,9 +416,7 @@
       <h1>Pomodoro Timer</h1>
       <p class="subtitle">Stay focused. Work in sessions.</p>
 
-      <!-- Circular timer -->
       <div class="timer-ring-wrap" id="timer-display">
-        <!-- SVG progress ring -->
         <svg class="timer-svg" viewBox="0 0 240 240" aria-hidden="true">
           <defs>
             <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -301,9 +424,7 @@
               <stop offset="100%" stop-color="#ff8c42" />
             </linearGradient>
           </defs>
-          <!-- track -->
           <circle class="ring-track" cx="120" cy="120" r="108" />
-          <!-- progress -->
           <circle
             class="ring-progress"
             id="ring-progress"
@@ -313,7 +434,6 @@
           />
         </svg>
 
-        <!-- Inner face -->
         <div class="timer-face">
           <div class="timer-digits">
             <span id="minuets">00</span>
@@ -340,8 +460,32 @@
       </div>
 
       <button class="btn-start" id="start-section">Start Session</button>
+    </div>
 
-      <p class="message" id="message"></p>
+    <!-- ── Completion Modal ── -->
+    <div
+      class="modal-overlay"
+      id="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="modal-scrim"></div>
+      <div class="modal">
+        <div class="modal-icon w-12 h-12 animate-bounce">
+          <img
+            src="./assets/on-time.png"
+            class="object-contain w-full h-full animate-shake"
+            alt="Icon"
+          />
+        </div>
+        <p class="modal-title" id="modal-title">Session Complete!</p>
+        <p class="modal-body">
+          Great work. You stayed focused and finished your session.<br />
+          Take a short break before the next one.
+        </p>
+        <button class="btn-dismiss" id="btn-dismiss">Start New Session</button>
+      </div>
     </div>
 
     <script src="src/main.js"></script>

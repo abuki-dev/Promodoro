@@ -3,9 +3,29 @@ const second = document.getElementById("seconds");
 const ms = document.getElementById("micorsecond");
 const start = document.getElementById("start-section");
 const display = document.getElementById("timer-display");
-const message = document.getElementById("message");
-const ringEl = document.getElementById("ring-progress");
 
+const ringEl = document.getElementById("ring-progress");
+const mainCard = document.getElementById("main-card");
+const modalOverlay = document.getElementById("modal-overlay");
+const btnDismiss = document.getElementById("btn-dismiss");
+
+// ── Modal helpers ──
+function showModal() {
+  mainCard.classList.add("blurred");
+  modalOverlay.classList.add("visible");
+}
+
+function hideModal() {
+  modalOverlay.classList.remove("visible");
+  mainCard.classList.remove("blurred");
+}
+
+btnDismiss.addEventListener("click", () => {
+  hideModal();
+  stopsound();
+  start.disabled = false;
+});
+const alarm = new Audio("./assets/alarm.mp3");
 // SVG ring: r=108, circumference = 2π × 108
 const CIRCUMFERENCE = 2 * Math.PI * 108;
 
@@ -13,7 +33,7 @@ const CIRCUMFERENCE = 2 * Math.PI * 108;
 ringEl.style.strokeDasharray = CIRCUMFERENCE;
 ringEl.style.strokeDashoffset = CIRCUMFERENCE;
 
-const pad = (n) => String(Math.max(0, n)).padStart(2, "0");
+const pad = (n) => String(n).padStart(2, "0");
 
 function setRing(fraction) {
   // fraction 1 = full ring, 0 = empty
@@ -28,7 +48,6 @@ start.addEventListener("click", () => {
     return;
   }
 
-  message.textContent = "";
   display.classList.remove("done");
   display.classList.add("running");
   start.disabled = true;
@@ -60,11 +79,19 @@ function startTimer(minutes) {
       second.textContent = "00";
       ms.textContent = "00";
       setRing(0);
+      playsound();
 
       display.classList.remove("running");
       display.classList.add("done");
-      message.textContent = "✓ Session complete. Great work!";
-      start.disabled = false;
+      showModal();
     }
   }, 100);
+}
+function playsound() {
+  alarm.play();
+  alarm.loop = true;
+}
+function stopsound() {
+  alarm.pause();
+  alarm.currentTime = 0;
 }
