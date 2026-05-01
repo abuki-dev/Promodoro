@@ -14,6 +14,7 @@
         align-items: center;
         justify-content: center;
         font-family: ui-sans-serif, system-ui, sans-serif;
+        padding: 1rem;
       }
 
       /* ── Card ── */
@@ -21,17 +22,16 @@
         background: linear-gradient(160deg, #161616, #0e0e0e);
         border: 1px solid #242424;
         border-radius: 2.5rem;
-        padding: 3rem 3rem 2.5rem;
-        width: 440px;
+        padding: 2.25rem 2rem 2rem;
+        width: 100%;
+        max-width: 420px;
         box-shadow:
           0 0 0 1px #ffffff06,
           0 40px 100px #00000090,
           inset 0 1px 0 #ffffff0a;
         text-align: center;
-        /* blur target */
         transition: filter 0.3s ease;
       }
-
       .card.blurred {
         filter: blur(6px);
         pointer-events: none;
@@ -51,7 +51,13 @@
         text-transform: uppercase;
         padding: 0.35rem 1rem;
         border-radius: 999px;
-        margin-bottom: 1.75rem;
+        margin-bottom: 1.25rem;
+      }
+
+      @media (min-width: 400px) {
+        .badge {
+          margin-bottom: 1.75rem;
+        }
       }
 
       .badge-dot {
@@ -64,24 +70,37 @@
 
       h1 {
         color: #f0f0f0;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 700;
         letter-spacing: -0.03em;
         margin-bottom: 0.3rem;
       }
 
+      @media (min-width: 400px) {
+        h1 {
+          font-size: 1.5rem;
+        }
+      }
+
       .subtitle {
         color: #444;
         font-size: 0.82rem;
-        margin-bottom: 2.25rem;
+        margin-bottom: 1.75rem;
       }
 
       /* ── Circular Timer ── */
       .timer-ring-wrap {
         position: relative;
-        width: 240px;
-        height: 240px;
-        margin: 0 auto 2.25rem;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 1.75rem;
+      }
+
+      @media (min-width: 400px) {
+        .timer-ring-wrap {
+          width: 230px;
+          height: 230px;
+        }
       }
 
       .timer-svg {
@@ -123,12 +142,18 @@
         display: flex;
         align-items: center;
         gap: 0.15rem;
-        font-size: 3.6rem;
+        font-size: 3rem;
         font-weight: 800;
         letter-spacing: -0.05em;
         color: #f0f0f0;
         font-variant-numeric: tabular-nums;
         line-height: 1;
+      }
+
+      @media (min-width: 400px) {
+        .timer-digits {
+          font-size: 3.6rem;
+        }
       }
 
       .timer-sep {
@@ -273,9 +298,60 @@
         box-shadow: none;
       }
 
-      /* ── Message (kept for JS compat, hidden visually) ── */
+      @media (max-width: 360px) {
+        .card {
+          border-radius: 1.5rem;
+          padding: 1.75rem 1.25rem 1.5rem;
+        }
+        .timer-ring-wrap {
+          width: 180px;
+          height: 180px;
+        }
+        .timer-digits {
+          font-size: 2.6rem;
+        }
+      }
       .message {
         display: none;
+      }
+
+      /* ── Stop Button ── */
+      .btn-stop {
+        width: 100%;
+        margin-top: 0.75rem;
+        padding: 0.9rem 1.5rem;
+        border-radius: 0.875rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: 1px solid #2e2e2e;
+        background: transparent;
+        color: #555;
+        transition:
+          color 0.2s,
+          border-color 0.2s,
+          background 0.2s,
+          transform 0.15s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-stop:hover:not(:disabled) {
+        border-color: #ff3b3b;
+        color: #ff3b3b;
+        background: #ff3b3b0e;
+        transform: translateY(-1px);
+      }
+
+      .btn-stop:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      .btn-stop:disabled {
+        opacity: 0.2;
+        cursor: not-allowed;
       }
 
       /* ════════════════════════════════════════
@@ -315,8 +391,9 @@
         background: linear-gradient(160deg, #1c1c1c, #131313);
         border: 1px solid #2e2e2e;
         border-radius: 1.75rem;
-        padding: 2.5rem 2.5rem 2rem;
-        width: 340px;
+        padding: 2rem 1.5rem 1.75rem;
+        width: calc(100% - 2rem);
+        max-width: 340px;
         text-align: center;
         box-shadow:
           0 0 0 1px #ffffff08,
@@ -460,6 +537,10 @@
       </div>
 
       <button class="btn-start" id="start-section">Start Session</button>
+      <button class="btn-stop stop" id="stop" style="color: white" disabled>
+        Stop
+      </button>
+      <p class="message" id="message"></p>
     </div>
 
     <!-- ── Completion Modal ── -->

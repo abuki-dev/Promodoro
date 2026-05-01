@@ -2,6 +2,7 @@ const minuet = document.getElementById("minuets");
 const second = document.getElementById("seconds");
 const ms = document.getElementById("micorsecond");
 const start = document.getElementById("start-section");
+const stopBtn = document.getElementById("stop");
 const display = document.getElementById("timer-display");
 
 const ringEl = document.getElementById("ring-progress");
@@ -20,10 +21,34 @@ function hideModal() {
   mainCard.classList.remove("blurred");
 }
 
+// ── Active timer reference (so stop can clear it) ──
+let activeTimer = null;
+
+// ── Stop button ──
+stopBtn.addEventListener("click", () => {
+  if (activeTimer) {
+    clearInterval(activeTimer);
+    activeTimer = null;
+  }
+  display.classList.remove("running", "done");
+  minuet.textContent = "00";
+  second.textContent = "00";
+  ms.textContent = "00";
+  setRing(0);
+  start.disabled = false;
+  stopBtn.disabled = true;
+});
+
 btnDismiss.addEventListener("click", () => {
   hideModal();
   stopsound();
+  display.classList.remove("done");
+  minuet.textContent = "00";
+  second.textContent = "00";
+  ms.textContent = "00";
+  setRing(0);
   start.disabled = false;
+  stopBtn.disabled = true;
 });
 const alarm = new Audio("./assets/alarm.mp3");
 // SVG ring: r=108, circumference = 2π × 108
@@ -51,6 +76,7 @@ start.addEventListener("click", () => {
   display.classList.remove("done");
   display.classList.add("running");
   start.disabled = true;
+  stopBtn.disabled = false;
 
   startTimer(inputMinutes);
 });
@@ -59,7 +85,7 @@ function startTimer(minutes) {
   const totalDuration = minutes * 60 * 1000;
   let totalMs = totalDuration;
 
-  const timer = setInterval(() => {
+  activeTimer = setInterval(() => {
     totalMs -= 100;
 
     const displayMinutes = Math.floor(totalMs / 60000);
@@ -74,7 +100,8 @@ function startTimer(minutes) {
     setRing(Math.max(0, totalMs / totalDuration));
 
     if (totalMs <= 0) {
-      clearInterval(timer);
+      clearInterval(activeTimer);
+      activeTimer = null;
       minuet.textContent = "00";
       second.textContent = "00";
       ms.textContent = "00";
@@ -83,6 +110,7 @@ function startTimer(minutes) {
 
       display.classList.remove("running");
       display.classList.add("done");
+      stopBtn.disabled = true;
       showModal();
     }
   }, 100);
