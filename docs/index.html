@@ -4,26 +4,49 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pomodoro Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="src/output.css" />
     <link rel="icon" type="image/png" href="./assets/sand-clock.png" />
   </head>
   <body>
-    <!-- ── Main card (gets blurred) ── -->
-    <div class="card" id="main-card">
-      <span class="badge">
-        <span class="badge-dot"></span>
-        Focus Mode
-      </span>
-      <h1>Pomodoro Timer</h1>
-      <p class="subtitle">Stay focused. Work in sessions.</p>
+    <!-- ambient glow orbs -->
+    <div class="orb orb-1" aria-hidden="true"></div>
+    <div class="orb orb-2" aria-hidden="true"></div>
 
+    <!-- ── Main card ── -->
+    <div class="card" id="main-card">
+      <!-- header -->
+      <div class="card-header">
+        <span class="badge">
+          <span class="badge-dot"></span>
+          Focus Mode
+        </span>
+        <div class="card-title-wrap">
+          <h1>Pomodoro Timer</h1>
+          <p class="subtitle">Deep work, one session at a time.</p>
+        </div>
+      </div>
+
+      <!-- ring -->
       <div class="timer-ring-wrap" id="timer-display">
         <svg class="timer-svg" viewBox="0 0 240 240" aria-hidden="true">
           <defs>
-            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#e85d04" />
-              <stop offset="100%" stop-color="#ff8c42" />
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#22c55e" />
+              <stop offset="100%" stop-color="#16a34a" />
             </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
           <circle class="ring-track" cx="120" cy="120" r="108" />
           <circle
@@ -49,23 +72,62 @@
         </div>
       </div>
 
+      <!-- input -->
       <div class="input-group">
-        <label for="totalminuet">Session Duration (minutes)</label>
-        <input
-          type="number"
-          id="totalminuet"
-          min="1"
-          max="1000"
-          placeholder="e.g. 25"
-        />
+        <label for="totalminuet">Session Duration</label>
+        <div class="input-wrap">
+          <input
+            type="number"
+            id="totalminuet"
+            min="1"
+            max="1000"
+            placeholder="25"
+          />
+          <span class="input-unit">min</span>
+        </div>
       </div>
 
-      <button class="btn-start" id="start-section">Start Session</button>
-      <button class="btn-stop" id="stop-section" disabled>Stop</button>
-      <button class="btn-stop stop bg-amber-500" id="restart" style="color: white" disabled>
-        Reset
-      </button>
-      <p class="message" id="message"></p>
+      <!-- buttons — each on its own row -->
+      <div class="btn-stack">
+        <button class="btn btn-green" id="start-section">
+          <span class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+          <span class="btn-label">Start Session</span>
+        </button>
+
+        <button class="btn btn-yellow" id="stop-section" disabled>
+          <span class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+          </span>
+          <span class="btn-label">Stop</span>
+        </button>
+
+        <button class="btn btn-red" id="restart" disabled>
+          <span class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
+              />
+            </svg>
+          </span>
+          <span class="btn-label">Reset</span>
+        </button>
+
+        <label for="audio" class="btn btn-blue">
+          <span class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
+            </svg>
+          </span>
+          <span class="btn-label">Choose Alarm Audio</span>
+        </label>
+        <input style="display: none" id="audio" type="file" accept="audio/*" />
+      </div>
     </div>
 
     <!-- ── Completion Modal ── -->
@@ -78,11 +140,11 @@
     >
       <div class="modal-scrim"></div>
       <div class="modal">
-        <div class="modal-icon w-12 h-12 animate-bounce">
+        <div class="modal-icon">
           <img
             src="./assets/on-time.png"
-            class="object-contain w-full h-full animate-shake"
-            alt="Icon"
+            class="modal-img"
+            alt="Session complete"
           />
         </div>
         <p class="modal-title" id="modal-title">Session Complete!</p>
@@ -90,7 +152,14 @@
           Great work. You stayed focused and finished your session.<br />
           Take a short break before the next one.
         </p>
-        <button class="btn-dismiss" id="btn-dismiss">Start New Session</button>
+        <button class="btn btn-green btn-dismiss" id="btn-dismiss">
+          <span class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+          <span class="btn-label">Start New Session</span>
+        </button>
       </div>
     </div>
 
