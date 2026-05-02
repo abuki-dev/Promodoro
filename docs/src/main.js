@@ -121,7 +121,7 @@ start.addEventListener("click", () => {
 
 // ── Core timer ──
 function startTimer(minutes, resume) {
-  const totalDuration = resume || minutes * 10 * 1000;
+  const totalDuration = resume || minutes * 60 * 1000;
   let totalMs = totalDuration;
 
   activeTimer = setInterval(() => {
