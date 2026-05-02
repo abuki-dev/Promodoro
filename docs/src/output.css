@@ -433,6 +433,14 @@ h1 {
   cursor: not-allowed;
   box-shadow: none;
 }
+.btn-stop:not(:disabled){
+ background: linear-gradient(135deg, #f6ea3b 0%, #17ea1e 100%);
+ color: #fff;
+}
+.stop:not(:disabled){
+ background: linear-gradient(135deg, #ff3b3b 0%, #ee1717 100%);
+ color: #fff;
+}
 @media (max-width: 360px) {
   .card {
     border-radius: 1.5rem;
